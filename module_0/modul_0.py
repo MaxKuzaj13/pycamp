@@ -1,24 +1,36 @@
+"""Module docstring Information what do this module,
+This is simulation how long did we have to draw to win max price in Lotto"""
 from random import randint
 
 
-def draw_number():
+def draw_numbers() -> object:
+    """
+    Draw 6 number without duplication in range 1 to 49
+    Return list : list containing 6 digits in range 1:49 without duplication
+    """
     drew = []
     while len(drew) < 6:
-        x = randint(1, 50)
-        if not x in drew:
-            drew.append(x)
+        get_number_in_range = randint(1, 49)
+        if get_number_in_range not in drew:
+            drew.append(get_number_in_range)
     return drew
 
 
+def iterate_until_equal(my_set, drawing_number_algorithm):
+    """
+    While loop returning numbers of try to draw numbers
+    :param my_set: set contains numbers without duplicates
+    :return: counter(int): counter with number of try
+    """
+    count = 1
+    while my_set != set(drawing_number_algorithm()):
+        count += 1
+    return count
+
+
 if __name__ == '__main__':
-    print('Test')
-    count_weeks = 0
-    my_set = {1, 13, 17, 9, 49, 21}
-    while True:
-        draw_list = draw_number()
-        if my_set == set(draw_list):
-            print(f'Udało się, potrzeba było {count_weeks} tygodni czyli {count_weeks // 52} lat i {count_weeks % 52} tygodni')
-            break
-        else:
-            print(f' count week {count_weeks} numbers: {draw_list}')
-            count_weeks += 1
+    MY_SET = {1, 13, 17, 9, 49, 21}
+    # We assume is one draw per week
+    COUNT_WEEKS = iterate_until_equal(MY_SET, draw_numbers)
+    print(f'Udało się, potrzeba było {COUNT_WEEKS} tygodni,'
+          f' czyli {COUNT_WEEKS // 52} lat i {COUNT_WEEKS % 52} tygodni')
