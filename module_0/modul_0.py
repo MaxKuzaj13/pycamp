@@ -1,11 +1,13 @@
-"""Module docstring Information what do this module,
-This is simulation how long did we have to draw to win max price in Lotto"""
+"""
+Module docstring Information what does this module,
+This is a simulation of how long did we have to draw to win max price in Lotto
+"""
 from random import randint
 
 
 def draw_numbers() -> object:
     """
-    Draw 6 number without duplication in range 1 to 49
+    Draw 6 numbers without duplication in range 1 to 49
     Return list : list containing 6 digits in range 1:49 without duplication
     """
     drew = []
@@ -18,7 +20,8 @@ def draw_numbers() -> object:
 
 def iterate_until_equal(my_set, drawing_number_algorithm):
     """
-    While loop returning numbers of try to draw numbers
+    While loop returning numbers of try to draw numbers. We assume if won in first time it is in week 1 not a week 0
+    :param drawing_number_algorithm: is algorythm to check data
     :param my_set: set contains numbers without duplicates
     :return: counter(int): counter with number of try
     """
