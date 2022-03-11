@@ -2,11 +2,20 @@
 Black Jack Game when you can play with your computer
 """
 # Game, Player, Deck, Card, Hand?
-import os
 from random import shuffle
-from datetime import datetime, timedelta
-import pygame
-from pygame.locals import *
+from datetime import datetime
+
+
+class WinExeption(Exception):
+    pass
+
+
+class LossExeption(Exception):
+    pass
+
+
+class DrawExeption(Exception):
+    pass
 
 
 class Cards:
@@ -42,23 +51,6 @@ class Hand(Cards):
         super().__init__()
         self.hand = []
 
-    def get_card_on_hand(self):
-        super().get_card()
-        self.hand.append(self.card_received)
-        self.check_if_win_or_lose(self.hand)
-
-
-    @staticmethod
-    def check_if_win_or_lose(player):
-        # TODO TEST cards_values = [11,11]
-        cards_values = [card[2] for card in player]
-        if len(cards_values) == 2 and sum(cards_values) == 22:
-            print('Wygrana')
-        elif sum(cards_values) > 21:
-            print('HUJ')
-
-
-
     def __str__(self):
         return str(self.hand)
 
@@ -67,6 +59,20 @@ class Player(Hand):
     def __init__(self, name_player="Croupier"):
         super().__init__()
         self.name_player = name_player
+
+    def get_card_on_hand(self):
+        super().get_card()
+        self.hand.append(self.card_received)
+        self.check_if_win_or_lose(self.hand)
+
+    def check_if_win_or_lose(self, player):
+        # TODO TEST cards_values = [11,11]
+        cards_values = [card[2] for card in player]
+        if len(cards_values) == 2 and sum(cards_values) == 22:
+            raise WinExeption(f"Wygrał: {self.name_player}")
+        elif sum(cards_values) > 21:
+            print(self.hand)
+            raise LossExeption(f"Przegrana: {self.name_player}a")
 
 
 class Game(Player):
@@ -92,7 +98,6 @@ class Game(Player):
         # os.system('read -s -n 1 -p "Press any key to continue..."')
         # pygame.init()
         # screen = pygame.display.set_mode((640, 400))
-        import keyboard  # using module keyboard
         print('Please told me if you want take one more card')
         print(f"{self.player1.name_player} have {self.count_sum_of_cards(self.player1.hand)} point\n"
               f"{self.player1.name_player} card is {self.player1.hand}")
@@ -107,32 +112,28 @@ class Game(Player):
                 print('You press Y')
                 print(f"{self.player1.name_player} have {self.count_sum_of_cards(self.player1.hand)} point\n"
                       f"{self.player1.name_player} card is {self.player1.hand}")
+
             elif pressed_key.lower() == 'n':
                 print('You press N')
                 # print(f"{self.player2.name_player} have {self.count_sum_of_cards(self.player2.hand)} point\n"
                 #       f"{self.player2.name_player} card is {self.player2.hand}")
-                while self.count_sum_of_cards(self.player2.hand) <= 21:
-                    print(1111111)
-                    print(f"{self.player2.name_player} have {self.count_sum_of_cards(self.player2.hand)} point\n"
-                          f"{self.player2.name_player} card is {self.player2.hand}")
-                    print(f"{self.player1.name_player} have {self.count_sum_of_cards(self.player1.hand)} point\n"
-                          f"{self.player1.name_player} card is {self.player1.hand}")
+                while self.count_sum_of_cards(self.player2.hand) < 21:
+                    self.inform_players_about_score()
                     if self.count_sum_of_cards(self.player2.hand) > self.count_sum_of_cards(self.player1.hand):
-                        print('bralke')
-                        # TODO RISING ERROR
-                        raise ValueError
-                        break
+                        raise LossExeption(f"Przegrana: {self.player2.name_player}a")
+                    elif self.count_sum_of_cards(self.player2.hand) == self.count_sum_of_cards(self.player1.hand):
+                        raise DrawExeption(
+                            f"Remis: {self.player2.name_player} i {self.player1.name_player} zremisowali")
                     else:
                         self.player2.get_card_on_hand()
-                print(22222)
-                # print(f"{self.player2.name_player} have {self.count_sum_of_cards(self.player2.hand)} point\n"
-                #       f"{self.player2.name_player} card is {self.player2.hand}")
-                # print(f"{self.player1.name_player} have {self.count_sum_of_cards(self.player1.hand)} point\n"
-                #       f"{self.player1.name_player} card is {self.player1.hand}")
-
             else:
                 print('you press N or Y or Q')
 
+    def inform_players_about_score(self):
+        print(f"{self.player2.name_player} have {self.count_sum_of_cards(self.player2.hand)} point\n"
+              f"{self.player2.name_player} card is {self.player2.hand}")
+        print(f"{self.player1.name_player} have {self.count_sum_of_cards(self.player1.hand)} point\n"
+              f"{self.player1.name_player} card is {self.player1.hand}")
 
     @staticmethod
     def count_sum_of_cards(player):
@@ -146,11 +147,17 @@ class Game(Player):
 
     def ask_user_his_name(self):
         # TODO change to this
-        #self.player1 = Player(input("Please provide name of player: "))
+        # self.player1 = Player(input("Please provide name of player: "))
         self.player1 = Player("Max")
-
 
 
 if __name__ == '__main__':
     game = Game()
-    game.start_game()
+    try:
+        game.start_game()
+    except WinExeption as e:
+        print(e)
+    except LossExeption as e:
+        print(e)
+    except DrawExeption as e:
+        print(e)
