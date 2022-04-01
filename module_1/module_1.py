@@ -71,7 +71,6 @@ class Player(Hand):
         if len(cards_values) == 2 and sum(cards_values) == 22:
             raise WinExeption(f"Wygrał: {self.name_player}")
         elif sum(cards_values) > 21:
-            print(self.hand)
             raise LossExeption(f"Przegrana: {self.name_player}a")
 
 
@@ -101,33 +100,42 @@ class Game(Player):
         print('Please told me if you want take one more card')
         print(f"{self.player1.name_player} have {self.count_sum_of_cards(self.player1.hand)} point\n"
               f"{self.player1.name_player} card is {self.player1.hand}")
-        while True:
-            pressed_key = input("Press Y to take a card N to pass or Q to quit: ")
-            if pressed_key.lower() == 'q':
-                print('You Pressed Q good by!')
-                break
-            elif pressed_key.lower() == 'y':
-                self.player1.get_card_on_hand()
-                self.count_sum_of_cards(self.player1.hand)
-                print('You press Y')
-                print(f"{self.player1.name_player} have {self.count_sum_of_cards(self.player1.hand)} point\n"
-                      f"{self.player1.name_player} card is {self.player1.hand}")
+        try:
+            while True:
+                pressed_key = input("Press Y to take a card N to pass or Q to quit: ")
+                if pressed_key.lower() == 'q':
+                    print('You Pressed Q good by!')
+                    break
+                elif pressed_key.lower() == 'y':
+                    self.player1.get_card_on_hand()
+                    self.count_sum_of_cards(self.player1.hand)
+                    print('You press Y')
+                    print(f"{self.player1.name_player} have {self.count_sum_of_cards(self.player1.hand)} point\n"
+                          f"{self.player1.name_player} card is {self.player1.hand}")
 
-            elif pressed_key.lower() == 'n':
-                print('You press N')
-                # print(f"{self.player2.name_player} have {self.count_sum_of_cards(self.player2.hand)} point\n"
-                #       f"{self.player2.name_player} card is {self.player2.hand}")
-                while self.count_sum_of_cards(self.player2.hand) < 21:
-                    self.inform_players_about_score()
-                    if self.count_sum_of_cards(self.player2.hand) > self.count_sum_of_cards(self.player1.hand):
-                        raise LossExeption(f"Przegrana: {self.player2.name_player}a")
-                    elif self.count_sum_of_cards(self.player2.hand) == self.count_sum_of_cards(self.player1.hand):
-                        raise DrawExeption(
-                            f"Remis: {self.player2.name_player} i {self.player1.name_player} zremisowali")
-                    else:
-                        self.player2.get_card_on_hand()
-            else:
-                print('you press N or Y or Q')
+                elif pressed_key.lower() == 'n':
+                    print('You press N')
+                    # print(f"{self.player2.name_player} have {self.count_sum_of_cards(self.player2.hand)} point\n"
+                    #       f"{self.player2.name_player} card is {self.player2.hand}")
+                    while self.count_sum_of_cards(self.player2.hand) < 21:
+                        self.inform_players_about_score()
+                        if self.count_sum_of_cards(self.player2.hand) > self.count_sum_of_cards(self.player1.hand):
+                            raise LossExeption(f"Przegrana: {self.player2.name_player}a")
+                        elif self.count_sum_of_cards(self.player2.hand) == self.count_sum_of_cards(self.player1.hand):
+                            raise DrawExeption(
+                                f"Remis: {self.player2.name_player} i {self.player1.name_player} zremisowali")
+                        else:
+                            self.player2.get_card_on_hand()
+                else:
+                    print('you press N or Y or Q')
+        except WinExeption as e:
+            print(e)
+        except LossExeption as e:
+            print(e)
+        except DrawExeption as e:
+            print(e)
+        finally:
+            self.inform_players_about_score()
 
     def inform_players_about_score(self):
         print(f"{self.player2.name_player} have {self.count_sum_of_cards(self.player2.hand)} point\n"
@@ -153,11 +161,4 @@ class Game(Player):
 
 if __name__ == '__main__':
     game = Game()
-    try:
-        game.start_game()
-    except WinExeption as e:
-        print(e)
-    except LossExeption as e:
-        print(e)
-    except DrawExeption as e:
-        print(e)
+    game.start_game()
