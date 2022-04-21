@@ -17,7 +17,8 @@ from string import punctuation
 #
 # print(validator.is_valid())
 
-
+class ValidationError(Exception):
+    pass
 
 class Validator(ABC):
     """"""
@@ -103,13 +104,10 @@ class HaveIBeenPwndValidator(Validator):
         for line in resp.text.splitlines():
             found_hash, _ = line.split(':')
             if found_hash == hash[5:]:
-                print(found_hash)
                 return False
+        return True
 
-
-
-
-
+# main validator
 class PasswordValidator(Validator):
     def __init__(self, password):
         self.password = password
@@ -124,7 +122,9 @@ class PasswordValidator(Validator):
     def is_valid(self):
         for class_name in self.validators:
             validator = class_name(self.password)
-            validator.is_valid()
+            if validator.is_valid() is False:
+                return False
+        return True
 
 
 validator = PasswordValidator('query')
